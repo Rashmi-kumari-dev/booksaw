@@ -1,0 +1,30 @@
+{% extends 'main.html'%}
+
+{% block content %}
+<section id="featured-books" class="py-5 my-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="section-header align-center">
+          <div class="title">
+          </div>
+          <h2 class="section-title">All Available Books</h2>
+        </div>
+
+        {% include 'base/list_books.html' with books=books%}
+
+
+      </div><!--inner-content-->
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% endblock content %}

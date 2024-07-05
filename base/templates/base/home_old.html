@@ -1,0 +1,41 @@
+{% extends 'main.html'%}
+{% block content %}
+<style>
+  .home-container{
+    display:grid;
+    grid-template-columns: 1fr 3fr;
+  }
+</style>
+
+<div class="home-container">
+  
+  <div>
+    <h3>Browse Books</h3>
+    <hr>
+    <div>
+      {% for genre in genres%}
+    <div>
+    <h5><a href="{% url 'home' %}?q={{genre}}">{{genre}}</a></h5>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div>
+  </div>
+
+  <div>
+    <h1>Available Books</h1>
+  <div>
+    {% for book in books %}
+    <div>
+
+      <h5>{{book.id}} --  <a href="{% url 'book' book.id %}">{{book.name}}</a></h5>
+
+    </div>
+    {% endfor %}
+  </div>
+  </div>
+
+</div>
+
+{% endblock content %}
