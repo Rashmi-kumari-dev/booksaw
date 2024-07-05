@@ -1,12 +1,20 @@
 <div class="product-item">
   <figure class="product-style">
-    <img src="{{book.url}}" alt="Books" class="product-item">
-    <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-      Cart</button>
+    <a href="/book/{{book.id}}">
+      <img src="{{book.url}}" alt="Books" class="product-item">
+      <button type="button" class="add-to-cart" data-product-tile="add-to-cart">
+        Add to Cart
+      </button>
+      <figcaption>
+        <h3>{{book.name}}</h3>
+        <span>{{book.author}}</span>
+        {% if book.discount > 0 %}
+          <span class="prev-price">$ {{book.price}}</span>$ {{book.price_after_discount}}
+        {% endif %}
+        {% if book.discount == 0 %}
+          <div class="item-price">{{book.price}}</div>
+        {% endif %}
+      </figcaption>
+    </a>
   </figure>
-  <figcaption>
-    <h3>{{book.name}}</h3>
-    <span>{{book.author}}</span>
-    <div class="item-price">{{book.price}}</div>
-  </figcaption>
 </div>

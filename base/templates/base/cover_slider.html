@@ -1,0 +1,4 @@
+{% for book in books %}
+  {% include 'base/cover_item.html' with book=book %}
+{% empty %}
+{% endfor %}

@@ -1,0 +1,30 @@
+{% extends 'main.html'%}
+
+{% block content %}
+<div class="container text-center">
+  <div class="mx-auto" style="width: 300px;">
+    <div class="product-item">
+      <figure class="product-style">
+        <img src="{{book.url}}" alt="Books" class="product-item">
+        <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+          Cart</button>
+      </figure>
+      <figcaption>
+        <h3>{{book.name}}</h3>
+        <span>{{book.author}}</span>
+        {% if book.discount > 0 %}
+          <span class="prev-price">$ {{book.price}}</span>$ {{book.price_after_discount}}
+        {% endif %}
+        {% if book.discount == 0 %}
+          <div class="item-price">{{book.price}}</div>
+        {% endif %}
+      </figcaption>
+      <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+        Cart</button>
+    </div>
+  </div>
+  <p>{{book.description}}</p>
+  
+</div>
+
+{% endblock content %}
