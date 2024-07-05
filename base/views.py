@@ -19,12 +19,15 @@ def home(request):
     'non_fiction': Book.objects.filter(genre__icontains='Non-fiction'),
   }
   coverBooks = Book.objects.all()[:5]
+  bestSelling = Book.objects.first()
   context= {
     'books':books, 
     'discountedBooks': discountedBooks,
     'booksByGenre':booksByGenre,
-    'coverBooks': coverBooks
+    'coverBooks': coverBooks,
+    'bestSelling': bestSelling
   }
+  
   return render(request,'base/home.html',context)
 
 def book(request, pk):
@@ -59,7 +62,7 @@ def logoutUser(request):
 def books(request):
   books=Book.objects.all()
   context={'books':books}
-  return render(request,'base/books.html',context)
+  return render(request,'base/all_books.html',context)
 
 def offer(request):
   books=Book.objects.filter(discount=False)
