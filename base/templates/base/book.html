@@ -6,8 +6,6 @@
     <div class="product-item">
       <figure class="product-style">
         <img src="{{book.url}}" alt="Books" class="product-item">
-        <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-          Cart</button>
       </figure>
       <figcaption>
         <h3>{{book.name}}</h3>
@@ -19,7 +17,7 @@
           <div class="item-price">{{book.price}}</div>
         {% endif %}
       </figcaption>
-      <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+      <button type="button" class="add-to-cart" data-product-tile="add-to-cart" onclick="cart.editCart({{book.id}}, 1, { message: '<b>{{book.name}}</b> added to cart' })">Add to
         Cart</button>
     </div>
   </div>

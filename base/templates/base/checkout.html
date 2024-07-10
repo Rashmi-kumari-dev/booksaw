@@ -1,0 +1,11 @@
+{% extends 'main.html'%}
+
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center text-center" id="vision-box-vision">
+  <div class="vision-text">
+    <h2> Order placed successfully! </h2>
+    <h2>Transaction Id is:  {{order.transaction_id}}</h2>
+  </div>
+</div>
+{% endblock content %}

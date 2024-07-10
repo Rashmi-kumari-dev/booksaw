@@ -139,3 +139,11 @@
 
 
 })(jQuery);
+
+function showToast(message) {
+  const liveToast = document.getElementById('liveToast');
+  const toastBootstrap = bootstrap.Toast.getOrCreateInstance(liveToast);
+  const toastBody = liveToast.getElementsByClassName('toast-body')[0];
+  toastBody.innerHTML = message;
+  toastBootstrap.show();
+}

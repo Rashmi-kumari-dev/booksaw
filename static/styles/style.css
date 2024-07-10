@@ -2460,3 +2460,20 @@ footer#footer {
   font-weight: bold;
   color: #07051a;
 }
+
+@media (min-width: 800px) {
+  .h-custom {
+    /* height: 80vh !important; */
+    }
+  }
+  
+  .card-registration .select-input.form-control[readonly]:not([disabled]) {
+    font-size: 1rem;
+    /* line-height: 2.15; */
+    padding-left: .75em;
+    padding-right: .75em;
+  }
+  
+  .card-registration .select-arrow {
+    top: 13px;
+  }

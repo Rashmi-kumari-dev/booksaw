@@ -1,0 +1,55 @@
+<hr class="my-5" />
+
+<div class="row mb-4 d-flex justify-content-between align-items-center">
+  <div class="col-md-2 col-lg-2 col-xl-2">
+    <img
+      src="{{item.book.url}}"
+      class="img-fluid rounded-3"
+    />
+  </div>
+  <div class="col-md-2 col-lg-2 col-xl-2">
+    <h6 class="text-muted">{{item.book.name}}</h6>
+    <h6 class="mb-0">{{item.book.author}}</h6>
+  </div>
+  <div class="col-md-2 col-lg-2 col-xl-2 d-flex">
+    {% comment %} <button
+      data-mdb-button-init
+      data-mdb-ripple-init
+      class="btn btn-link px-2 mt-0"
+      onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash mt-0" viewBox="0 0 16 16">
+        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+      </svg>
+    </button> {% endcomment %}
+
+    <input
+      id="form1"
+      min="0"
+      name="quantity"
+      value="{{item.quantity}}"
+      type="number"
+      class="form-control form-control-sm mb-0 cart-edit-quantity"
+      data-book-id="{{item.book.id}}"
+      data-book-price="{{item.book.price}}"
+      onfocus="this.oldvalue = this.value;"
+      onchange="cart.onEditCartQuantity(this)"
+    />
+  </div>
+  <div class="col-md-1 col-lg-1 col-xl-2 offset-lg-1">
+    
+    {% if item.book.discount > 0 %}
+      <span class="mb-0" id="cart-item-book-id-{{item.book.id}}"><span class="prev-price">${{item.book.price}}</span>${{item.book.price_after_discount}}</span>
+    {% else %}
+      <span class="mb-0" id="cart-item-book-id-{{item.book.id}}">$ {{item.total_price}}</span>
+    {% endif %}
+  </div>
+  <div class="col-md-1 col-lg-1 col-xl-1 offset-lg-1">
+    <a href="" onclick="cart.editCart({{item.book.id}}, 0, { removeItem: true })">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+      </svg> 
+    </a>
+  </div>
+</div>

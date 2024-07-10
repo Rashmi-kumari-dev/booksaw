@@ -28,6 +28,58 @@ class Genre(models.Model):
 
   def __str__(self):
     return self.genre
+  
+class Order(models.Model):
+  customer=models.ForeignKey(User,on_delete=models.SET_NULL, blank=True,null=True)
+  date_ordered= models.DateTimeField(auto_now_add=True)
+  complete=models.BooleanField(default=False,null=True,blank=False)
+  transaction_id=models.CharField(max_length=200,null=True)
+
+  def __str__(self):
+    return str(self.id)
+  
+  @property
+  def total_price(self):
+    items = OrderItem.objects.filter(order=self) or []
+    return sum(item.total_price for item in items)
+  
+  @property
+  def shipping_address(self):
+    return ShippingAddress.objects.get(order=self)
+  
+  @property
+  def items_count(self):
+    items = OrderItem.objects.filter(order=self) or []
+    return len(items)
+
+class OrderItem(models.Model):
+  book=models.ForeignKey(Book,on_delete=models.SET_NULL, blank=True,null=True)
+  order=models.ForeignKey(Order, on_delete=models.SET_NULL,blank=True,null=True)
+  quantity=models.IntegerField(default=0, null=True, blank=True)
+  date_added=models.DateTimeField(auto_now_add=True)
+
+  @property
+  def total_price(self):
+    return self.book.price * self.quantity
+
+
+class ShippingAddress(models.Model):
+  customer=models.ForeignKey(User,on_delete=models.SET_NULL, blank=True,null=True)
+  order=models.ForeignKey(Order, on_delete=models.SET_NULL,blank=True,null=True)
+  address=models.CharField(max_length=200, null=True)
+  city=models.CharField(max_length=200, null=True)
+  state=models.CharField(max_length=200, null=True)
+  zipcode=models.CharField(max_length=200, null=True)
+  date_added=models.DateTimeField(auto_now_add=True)
+
+  def __str__(self):
+    return self.address
+  
+
+  
+
+
+
 
 
 

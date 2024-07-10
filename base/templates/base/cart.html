@@ -1,0 +1,87 @@
+{% extends 'main.html'%}
+
+{% block content %}
+<section>
+  <div class="container">
+    <div class="row d-flex justify-content-center align-items-center h-60">
+      <div class="col-12">
+        <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+          <div class="card-body p-0">
+            <div class="row g-0">
+              <div class="col-lg-8">
+                <div class="p-5">
+                  <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h1 class="fw-bold mb-0">Shopping Cart</h1>
+                    <h6 class="mb-0">{{items|length}} items</h6>
+                  </div>
+                  {% if items|length == 0 %}
+                    <h3> Your Cart Is Empty! </h3>
+                  {% endif %} 
+                  {% for item in items %}
+                    {% include 'base/cart_item.html' with item=item%}
+                  {% endfor %}
+
+                  <hr class="my-4">
+
+                  <div class="pt-5">
+                    <h6 class="mb-0"><a href="/" class="text-body"><i
+                          class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 bg-body-tertiary">
+                <div class="p-5 pb-0">
+                  <div class="d-flex justify-content-between mb-5">
+                    <h5 class="text-uppercase">Total price</h5>
+                    <h5>$ {{order.total_price}}</h5>
+                  </div>
+                </div>
+                <div class="p-5 pt-0 pb-0">
+                  <h3 class="fw-bold mb-0 mt-0 pt-1">Shipping Address</h3>
+                  <hr class="my-4">
+
+                  <div class="mb-4 pb-2">
+                    <form method="POST" action="/checkout/">
+                      {% csrf_token %}
+                      <input type="hidden" name="orderId" value="{{order.id}}">
+                      <!-- 2 column grid layout with text inputs for the first and last names -->
+                      <div class="row mb-4">
+                        <div class="col">
+                          <div data-mdb-input-init class="form-outline mb-4">
+                            <label class="form-label" for="form7Example4">Address</label>
+                            <input name="address" type="text" id="form7Example4" class="form-control" />
+                          </div>
+                          <div class="col">
+                            <div data-mdb-input-init class="form-outline">
+                              <label class="form-label" for="form7Example2">State</label>
+                              <input name="state" type="text" id="form7Example2" class="form-control" />
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div data-mdb-input-init class="form-outline">
+                              <label class="form-label" for="form7Example2">City</label>
+                              <input name="city" type="text" id="form7Example2" class="form-control" />
+                            </div>
+                          </div>
+                          <div data-mdb-input-init class="form-outline">
+                            <label class="form-label" for="form7Example1">Zipcode</label>
+                            <input name="zipcode" type="text" id="form7Example1" class="form-control" />
+                          </div>
+                          <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-block btn-lg"
+                          data-mdb-ripple-color="dark">Checkout</button>
+                        </div>
+                      
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock content %}
