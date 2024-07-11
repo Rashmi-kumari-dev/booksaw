@@ -2187,22 +2187,6 @@ span.prev-price {
 
 }
 
-/*
-@media screen and (max-width: 780px) {
-  #subscribe form#form {
-      width: 90%;
-  }
-  #subscribe .subscribe-content {
-      width: 90%;
-  }
-}*/
-
-
-/*----- Latest Blog Section
---------------------------------------------------------------*/
-#latest-blog {
-}
-
 #latest-blog article.column {
   margin-bottom: 60px;
 }
