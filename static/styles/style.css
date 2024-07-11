@@ -1553,19 +1553,19 @@ button {
 /*--- Pattern Overlay
 -----------------------------------------------*/
 .pattern-overlay {
-  background-image: url(images/pattern1.png);
+  background-image: url('/static/images/pattern1.png');
   background-repeat: no-repeat;
   background-position: top right;
 }
 
 .leaf-pattern-overlay {
-  background-image: url(images/leaf.png);
+  background-image: url('/static/images/leaf.png');
   background-repeat: no-repeat;
   background-position: bottom left;
 }
 
 .corner-pattern-overlay {
-  background-image: url(images/pattern2.png);
+  background-image: url('/static/images/pattern2.png');
   background-repeat: no-repeat;
   background-position: top right;
 }
@@ -2462,10 +2462,6 @@ footer#footer {
 }
 
 @media (min-width: 800px) {
-  .h-custom {
-    /* height: 80vh !important; */
-    }
-  }
   
   .card-registration .select-input.form-control[readonly]:not([disabled]) {
     font-size: 1rem;
@@ -2477,3 +2473,4 @@ footer#footer {
   .card-registration .select-arrow {
     top: 13px;
   }
+}
