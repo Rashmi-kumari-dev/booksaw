@@ -8,6 +8,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import uuid
+from .quote_generator import generate_quote
 
 def getCartItemCount(request):
   cartItemCount = 0
@@ -29,7 +30,7 @@ def home(request):
   coverBooks = Book.objects.all()[:5]
   bestSelling = Book.objects.last()
   cartItemCount = getCartItemCount(request)
-
+  quoteResponse = generate_quote()
   context= {
     'books':books, 
     'discountedBooks': discountedBooks,
@@ -37,7 +38,9 @@ def home(request):
     'coverBooks': coverBooks,
     'bestSelling': bestSelling,
     'user': None,
-    'cartItemCount': cartItemCount
+    'cartItemCount': cartItemCount,
+    'quoteOfTheDay': quoteResponse['message'],
+    'quotee': quoteResponse['quotee']
   }
   
   return render(request,'base/home.html',context)
@@ -90,9 +93,8 @@ def vision(request):
 def contact(request):
   return render(request,'base/contact.html')
 
-def report_problem(request):
-  return render(request,'base/report_problem.html')
 
+@login_required(login_url='/login/')
 def cart(request):
   if request.user.is_authenticated:
     order, created =Order.objects.get_or_create(customer=request.user,complete=False)
@@ -103,7 +105,7 @@ def cart(request):
   context={'items':items, 'order': order, 'cartItemCount': getCartItemCount(request)}
   return render(request,'base/cart.html', context)
 
-@login_required
+@login_required(login_url='/login/')
 def order(request, pk):
   order = Order.objects.get(id=pk)
   items = order.orderitem_set.all()
@@ -114,7 +116,7 @@ def order(request, pk):
   }
   return render(request, 'base/order.html', context)
   
-@login_required
+@login_required(login_url='/login/')
 def checkout(request):
   address = request.POST.get("address")
   state = request.POST.get("state")
@@ -155,7 +157,7 @@ def setCartQuantity(request):
   orderItem.save()
   return HttpResponse(json.dumps({ 'success': True, 'cartItemCount': getCartItemCount(request) }), content_type='application/json')
 
-@login_required
+@login_required(login_url='/login/')
 def order_history(request):
   orders = Order.objects.filter(customer=request.user, complete=True).order_by("-id")
   return render(request,'base/order_history.html', { 'orders': orders, 'cartItemCount': getCartItemCount(request) })
