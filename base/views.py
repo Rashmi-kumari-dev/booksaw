@@ -109,6 +109,9 @@ def login_page(request):
     
     if user is not None:
       user=authenticate(request,username=user.username, password=password)
+      if user is None:
+        messages.error(request, "Username or Password  does not match.")
+        return render(request, 'base/login.html')
       login(request, user)
       request.user = user
       return redirect('home')
