@@ -7,37 +7,25 @@ from .models import Book, Genre, Order, OrderItem, ShippingAddress
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-import uuid
-from .quote_generator import generate_quote
-
-def getCartItemCount(request):
-  cartItemCount = 0
-  if request.user.is_authenticated:
-    order, created = Order.objects.get_or_create(customer=request.user,complete=False)
-    cartItemCount = order.orderitem_set.count()
-  return cartItemCount
+from .service.book_service import BookService
+from .service.quote_service import QuoteService
+from .service.cart_service import CartService
+from .service.order_service import OrderService
 
 def home(request):
-  books=Book.objects.filter(is_featured=True)
-  discountedBooks = Book.objects.filter(discount__gt=0)
-  booksByGenre = {
-    'romance': Book.objects.filter(genre__icontains='Romance'),
-    'technology': Book.objects.filter(genre__icontains='Technology'),
-    'fantasy': Book.objects.filter(genre__icontains='Fantasy'),
-    'adventure': Book.objects.filter(genre__icontains='Adventure'),
-    'non_fiction': Book.objects.filter(genre__icontains='Non-fiction'),
-  }
-  coverBooks = Book.objects.all()[:5]
-  bestSelling = Book.objects.last()
-  cartItemCount = getCartItemCount(request)
-  quoteResponse = generate_quote()
+  books = BookService.find_all_featured()
+  discountedBooks = BookService.find_all_discounted()
+  booksByGenre = BookService.find_all_genre_groups()
+  coverBooks = BookService.find_all_covers()
+  bestSelling = BookService.find_best_selling()
+  cartItemCount = CartService.get_items_count(request.user)
+  quoteResponse = QuoteService.generate()
   context= {
-    'books':books, 
+    'books':books,
     'discountedBooks': discountedBooks,
     'booksByGenre':booksByGenre,
     'coverBooks': coverBooks,
     'bestSelling': bestSelling,
-    'user': None,
     'cartItemCount': cartItemCount,
     'quoteOfTheDay': quoteResponse['message'],
     'quotee': quoteResponse['quotee']
@@ -45,12 +33,71 @@ def home(request):
   
   return render(request,'base/home.html',context)
 
+def books(request):
+  books = BookService.find_all()
+  context = { 'books': books, 'cartItemCount': CartService.get_items_count(request.user) }
+  return render(request,'base/all_books.html', context)
+
 def book(request, pk):
-  book=Book.objects.get(id=pk)
-  context={'book':book, 'cartItemCount': getCartItemCount(request)}
+  book = BookService.find_by_id(pk)
+  context={'book':book, 'cartItemCount': CartService.get_items_count(request.user)}
   return render(request,'base/book.html',context)
 
-def loginPage(request):
+@login_required(login_url='/login/')
+def cart(request):
+  cart_response = CartService.get_cart_for_user(request.user)
+
+  context = {
+    'items': cart_response['items'], 
+    'order': cart_response['order'], 
+    'cartItemCount': CartService.get_items_count(request.user)
+  }
+  return render(request,'base/cart.html', context)
+
+@csrf_exempt
+def edit_cart(request):
+  edit_cart_request = json.loads(request.body)
+  CartService.edit_cart(request.user, edit_cart_request)
+  
+  return HttpResponse(json.dumps({ 'success': True, 'cartItemCount': CartService.get_items_count(request.user) }), content_type='application/json')
+
+@csrf_exempt
+def set_cart_quantity(request):
+  set_cart_request = json.loads(request.body)
+  CartService.set_cart_quantity(request.user, set_cart_request)
+  return HttpResponse(json.dumps({ 'success': True, 'cartItemCount': CartService.get_items_count(request.user) }), content_type='application/json')
+
+@login_required(login_url='/login/')
+def checkout(request):
+  address = request.POST.get("address")
+  state = request.POST.get("state")
+  city = request.POST.get("city")
+  zipcode = request.POST.get("zipcode")
+  orderId = request.POST.get("orderId")
+  order = Order.objects.get(id=int(orderId))
+
+  shipping_address = ShippingAddress(address=address, state=state, city=city, zipcode=zipcode, customer=request.user, order=order)
+  CartService.checkout(order, shipping_address)
+
+  return render(request,'base/checkout.html', { 'order': order, 'cartItemCount': CartService.get_items_count(request.user) })
+
+@login_required(login_url='/login/')
+def order(request, pk):
+  order = OrderService.find_by_id(pk)
+  items = OrderService.find_all_items(order)
+  context = {
+    'order': order,
+    'items': items,
+    'cartItemCount': CartService.get_items_count(request.user)
+  }
+  return render(request, 'base/order.html', context)
+
+@login_required(login_url='/login/')
+def order_history(request):
+  orders = OrderService.get_order_history_for_user(request.user)
+  return render(request,'base/order_history.html', { 'orders': orders, 'cartItemCount': CartService.get_items_count(request.user) })
+
+def login_page(request):
   user = None
   if request.method=='POST':
     email = request.POST.get("email")
@@ -71,96 +118,12 @@ def loginPage(request):
   context={'user': user}
   return render(request, 'base/login.html',context)
 
-def logoutUser(request):
+def logout_user(request):
   logout(request)
   return redirect ('/')
-
-
-def books(request):
-  books=Book.objects.all()
-  context={'books':books, 'cartItemCount': getCartItemCount(request)}
-  return render(request,'base/all_books.html',context)
-
-def offer(request):
-  books=Book.objects.filter(discount=False)
-  context={'books':books, 'cartItemCount': getCartItemCount(request)}
-  return render(request,'base/home.html',context)
-
 
 def vision(request):
   return render(request,'base/vision.html')
 
 def contact(request):
   return render(request,'base/contact.html')
-
-
-@login_required(login_url='/login/')
-def cart(request):
-  if request.user.is_authenticated:
-    order, created =Order.objects.get_or_create(customer=request.user,complete=False)
-    items=order.orderitem_set.all()
-  else:
-    items=[]
-
-  context={'items':items, 'order': order, 'cartItemCount': getCartItemCount(request)}
-  return render(request,'base/cart.html', context)
-
-@login_required(login_url='/login/')
-def order(request, pk):
-  order = Order.objects.get(id=pk)
-  items = order.orderitem_set.all()
-  context = {
-    'order': order,
-    'items': items,
-    'cartItemCount': getCartItemCount(request)
-  }
-  return render(request, 'base/order.html', context)
-  
-@login_required(login_url='/login/')
-def checkout(request):
-  address = request.POST.get("address")
-  state = request.POST.get("state")
-  city = request.POST.get("city")
-  zipcode = request.POST.get("zipcode")
-  orderId = request.POST.get("orderId")
-  order = Order.objects.get(id=int(orderId))
-  shippingAddress = ShippingAddress(address=address, state=state, city=city, zipcode=zipcode, customer=request.user, order=order)
-  shippingAddress.save()
-  order.complete = True
-  order.transaction_id = str(uuid.uuid4())
-  order.save()
-  return render(request,'base/checkout.html', { 'order': order, 'cartItemCount': getCartItemCount(request) })
-
-@csrf_exempt
-def editCart(request):
-  editCartBody=json.loads(request.body)
-  order, created =Order.objects.get_or_create(customer=request.user,complete=False)
-  book=Book.objects.get(id=editCartBody['bookId'])
-  orderItem, created = OrderItem.objects.get_or_create(book=book, order=order)
-  newQuantity = orderItem.quantity + (editCartBody['quantity'] or 0)
-  removeItem = ('removeItem' in editCartBody and editCartBody['removeItem']) or False
-  if newQuantity <= 0 or removeItem:
-    orderItem.delete()
-  else:
-    orderItem.quantity = newQuantity
-    orderItem.save()
-  
-  return HttpResponse(json.dumps({ 'success': True, 'cartItemCount': getCartItemCount(request) }), content_type='application/json')
-
-@csrf_exempt
-def setCartQuantity(request):
-  setCartBody=json.loads(request.body)
-  order, created =Order.objects.get_or_create(customer=request.user,complete=False)
-  book=Book.objects.get(id=setCartBody['bookId'])
-  orderItem, created = OrderItem.objects.get_or_create(book=book, order=order)
-  orderItem.quantity = setCartBody['newQuantity']
-  orderItem.save()
-  return HttpResponse(json.dumps({ 'success': True, 'cartItemCount': getCartItemCount(request) }), content_type='application/json')
-
-@login_required(login_url='/login/')
-def order_history(request):
-  orders = Order.objects.filter(customer=request.user, complete=True).order_by("-id")
-  return render(request,'base/order_history.html', { 'orders': orders, 'cartItemCount': getCartItemCount(request) })
-
-   
-
