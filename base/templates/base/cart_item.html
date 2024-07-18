@@ -31,7 +31,7 @@
       type="number"
       class="form-control form-control-sm mb-0 cart-edit-quantity"
       data-book-id="{{item.book.id}}"
-      data-book-price="{{item.book.price}}"
+      data-book-price="{{item.book.price_after_discount}}"
       onfocus="this.oldvalue = this.value;"
       onchange="cart.onEditCartQuantity(this)"
     />

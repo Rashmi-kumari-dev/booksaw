@@ -11,6 +11,7 @@ from .service.book_service import BookService
 from .service.quote_service import QuoteService
 from .service.cart_service import CartService
 from .service.order_service import OrderService
+from .forms import SignupForm
 
 def home(request):
   books = BookService.find_all_featured()
@@ -96,6 +97,17 @@ def order(request, pk):
 def order_history(request):
   orders = OrderService.get_order_history_for_user(request.user)
   return render(request,'base/order_history.html', { 'orders': orders, 'cartItemCount': CartService.get_items_count(request.user) })
+
+def signup(request):
+  if request.method == 'POST':
+    form = SignupForm(request.POST)
+    if form.is_valid():
+      user = form.save()
+      login(request, user)
+      return redirect('home')
+  else:
+      form = SignupForm()
+  return render(request, 'base/signup.html', {'form': form})
 
 def login_page(request):
   user = None
