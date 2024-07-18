@@ -3,9 +3,11 @@
 {% block content %}
 
 <div class="d-flex flex-column justify-content-center text-center" id="vision-box-vision">
-  <h2> Thank You. </h2>
-  <p> Your order has been placed successfully. </p>
-  <p> Order ID is: <b>{{order.id}}</b> </p>
-  <p> Transaction ID is:  <b>{{order.transaction_id}}</b></p>
+  <div class="vision-text">
+    <h2> Thank You. </h2>
+    <p> Your order has been placed successfully. </p>
+    <p> Order ID is: <b>{{order.id}}</b> </p>
+    <p> Transaction ID is:  <b>{{order.transaction_id}}</b></p>
+  </div>
 </div>
 {% endblock content %}

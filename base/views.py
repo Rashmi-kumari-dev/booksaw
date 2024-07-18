@@ -110,6 +110,9 @@ def signup(request):
   return render(request, 'base/signup.html', {'form': form})
 
 def login_page(request):
+  if request.user.is_authenticated:
+    return redirect("/")
+  
   user = None
   if request.method=='POST':
     email = request.POST.get("email")
@@ -121,15 +124,17 @@ def login_page(request):
     
     if user is not None:
       user=authenticate(request,username=user.username, password=password)
+
       if user is None:
         messages.error(request, "Username or Password  does not match.")
         return render(request, 'base/login.html')
+
       login(request, user)
       request.user = user
       return redirect('home')
     else:
       messages.error(request, "Username or Password  does not match.")
-
+  
   context={'user': user}
   return render(request, 'base/login.html',context)
 
