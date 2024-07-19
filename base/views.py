@@ -57,8 +57,8 @@ def cart(request):
 
 @csrf_exempt
 def edit_cart(request):
-  edit_cart_request = json.loads(request.body)
-  CartService.edit_cart(request.user, edit_cart_request)
+  edit_cart_data = json.loads(request.body)
+  CartService.edit_cart(request.user, edit_cart_data)
   
   return HttpResponse(json.dumps({ 'success': True, 'cartItemCount': CartService.get_items_count(request.user) }), content_type='application/json')
 

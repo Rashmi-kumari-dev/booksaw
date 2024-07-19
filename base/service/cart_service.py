@@ -28,15 +28,15 @@ class CartService:
     order.save()
 
   @staticmethod
-  def edit_cart(user, edit_cart_request):
-    book_id = edit_cart_request['bookId']
-    quantity = edit_cart_request['quantity']
+  def edit_cart(user, edit_cart_data):
+    book_id = edit_cart_data['bookId']
+    quantity = edit_cart_data['quantity']
 
     order, _ = Order.objects.get_or_create(customer=user, complete=False)
     book = BookService.find_by_id(book_id)
     book_order_item, _ = OrderItem.objects.get_or_create(book=book, order=order)
     new_quantity = book_order_item.quantity + quantity
-    is_item_removed = ('removeItem' in edit_cart_request and edit_cart_request['removeItem']) or new_quantity <= 0
+    is_item_removed = ('removeItem' in edit_cart_data and edit_cart_data['removeItem']) or new_quantity <= 0
 
     if is_item_removed:
       book_order_item.delete()
